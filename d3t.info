@@ -1,0 +1,4 @@
+name = d3t
+description = View Taxonomy in a force graph
+core = 7.x
+package = "Views"

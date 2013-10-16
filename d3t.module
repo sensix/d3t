@@ -1,0 +1,65 @@
+<?php 
+include(drupal_get_path('module', 'd3t') . "/include/Bubble.inc");
+/**
+ * Hook menu
+ * 
+ */
+function d3t_menu(){
+	$items = array();
+	
+	$items['d3t'] = array(
+			'page callback' => 'd3t_view_graph',
+			'access callback' => true,
+			'type' => MENU_CALLBACK, 
+			'file' => 'd3t.inc',
+	);
+	
+	$items['d3t/data.json'] = array(
+			'page callback' => 'd3t_data_json',
+			'access callback' => true,
+			'type' => MENU_CALLBACK,
+			'file' => 'd3t.inc',
+	);
+	$items['d3t/testdata.json'] = array(
+			'page callback' => 'd3t_test_data_json',
+			'access callback' => true,
+			'type' => MENU_CALLBACK,
+			'file' => 'd3t.inc',
+	);
+	return $items;
+}
+/**
+ * Hook block_info
+ * 
+ */
+function d3t_block_info(){
+	return array('graph' =>
+			array('info' => t('Content Graph'))
+	);
+}
+/**
+ * Hook view
+ * 
+ */
+function d3t_block_view($delta){
+	$block = array();
+	switch($delta){
+		case 'graph':
+			$block['subject'] = '';
+			$block['content'] = array(
+				'#markup' => '<div class="graph"></div>',
+  			'#attached' => array(
+      		'css' => array(
+        		drupal_get_path('module', 'd3t') . '/css/style.css',
+      		),
+      		'js' => array(
+        		drupal_get_path('module', 'd3t') . '/js/modernizr.js',
+      			drupal_get_path('module', 'd3t') . '/js/d3.v3.js',
+      			drupal_get_path('module', 'd3t') . '/js/force_directed_graph.js'
+    			),
+  			),
+  		);
+			break;
+	}
+	return $block;
+}

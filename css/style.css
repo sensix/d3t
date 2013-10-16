@@ -1,0 +1,31 @@
+  node { 
+    stroke-width: 1.5px;
+    }
+  .graph {
+    margin:0 auto;
+    width:840px;
+    color:#000;
+    border: 1px dashed #333;
+    fill: #000;
+    background-color: #000;
+    }   
+  line {
+    stroke: #666;
+    }
+  .text {
+    text-align:justify; 
+    width:780px;
+    height:140px;
+    margin: 0 auto;
+    color:#fff;
+    font-size:14px;
+    line-height:20px;
+    }
+    
+  .text a {
+    color:orange;
+    text-decoration:none;
+    }
+  .text a:hover {
+    color:red;
+    }
