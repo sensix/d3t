@@ -58,7 +58,7 @@ function d3t_graph_mappe_tematiche($disciplina_tid){
 		$n->parent_type = 'D';
 		$n->parent_tid = $disciplina_tid;
 		$n->group=$group++;
-		$n->type="mappa-tematica";
+		$n->type="M";
 		$nodes[] = $n;
 		$sum += $n->size;
 	}
