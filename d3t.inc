@@ -1,4 +1,138 @@
 <?php 
+function d3t_content(){
+	$parent_type = !empty($_REQUEST['parent_type'])?$_REQUEST['parent_type']:false;
+	$parent_tid = !empty($_REQUEST['parent_tid'])?$_REQUEST['parent_tid']:false;
+	$type = $_REQUEST['type'];
+	$tid = $_REQUEST['tid'];
+	if($parent_type && $parent_tid){
+		$params = array(
+				$parent_type => $parent_tid,
+				$type => $tid
+				);
+	}
+	else{
+		$params = array($type => $tid);
+	}
+	$nodes = _get_nodes_related_to_terms($params);
+	$out = '<ul calss="graph-content">';
+	foreach($nodes as $node){
+		$out .= '<li>'.l($node->title, 'node/' . $node->nid).'</li>';
+	}
+	$out .= '</ul>';
+	print $out;
+}
+
+function d3t_graph_discipline($mappa_tematica_tid){
+	$nodes =$links = array();
+	$d = d3t_data_discipline_json($mappa_tematica_tid);
+	$nodes[] = _get_term_name($mappa_tematica_tid);
+	$sum = 0;
+	$group = 2;
+	foreach($d as &$n){
+		$n->parent_type = 'M';
+		$n->parent_tid = $mappa_tematica_tid;
+		$n->group=$group++;
+		$n->type="D";
+		$nodes[] = $n;
+		$sum += $n->size;
+	}
+	$nodes[0]->size = $sum;
+	$nodes[0]->parent_type = 'ROOT';
+	$nodes[0]->parent_tid = 0;
+	$nodes[0]->group = 1;
+	$nodes[0]->type = 'M';
+	for($i=1; $i<count($nodes); $i++){
+		$links[] = array("source" => $i, "target" => 0, "value" => $nodes[$i]->size);
+	}
+	$data = array('nodes' => $nodes, "links" => $links);
+	drupal_json_output($data);
+}
+
+function d3t_graph_mappe_tematiche($disciplina_tid){
+	$nodes =$links = array();
+	$d = d3t_data_areatematica_json($disciplina_tid);
+	$nodes[] = _get_term_name($disciplina_tid);
+	$sum = 0;
+	$group = 2;
+	foreach($d as &$n){
+		$n->parent_type = 'D';
+		$n->parent_tid = $disciplina_tid;
+		$n->group=$group++;
+		$n->type="mappa-tematica";
+		$nodes[] = $n;
+		$sum += $n->size;
+	}
+	$nodes[0]->size = $sum;
+	$nodes[0]->parent_type = 'ROOT';
+	$nodes[0]->parent_tid = 0;
+	$nodes[0]->group = 1;
+	$nodes[0]->type = 'D';
+	for($i=1; $i<count($nodes); $i++){
+		$links[] = array("source" => $i, "target" => 0, "value" => $nodes[$i]->size);
+	}
+	$data = array('nodes' => $nodes, "links" => $links);
+	drupal_json_output($data);	
+}
+
+function _get_term_name($tid){
+	return db_query("select name,0 as size,tid from taxonomy_term_data term
+	where term.tid=:tid",array(":tid" => $tid))->fetch();
+}
+/**
+ * Costruisce l'oggetto json con i dati sulle discipline, avendo fissato l'area tematica
+ *
+ */
+function d3t_data_discipline_json($mappa_tematica_tid){
+	return db_query("select t.name, count(node.nid) as size, t.tid from node
+join field_data_field_disciplina d on d.entity_id=node.nid
+join field_data_field_mappa_tematica m on m.entity_id=node.nid
+join taxonomy_term_data t on t.tid=d.field_disciplina_tid
+where m.field_mappa_tematica_tid=:mappa_tematica_tid
+group by t.tid, t.name;", array(':mappa_tematica_tid' => $mappa_tematica_tid))->fetchAll();
+}
+/**
+ * Costruisce l'oggetto json con i dati sulle aree tematiche, avendo fissato la disciplina
+ *
+ */
+function d3t_data_areatematica_json($disciplina_tid){
+	
+	return db_query("select t.name, count(node.nid) as size,t.tid from node
+join field_data_field_disciplina d on d.entity_id=node.nid
+join field_data_field_mappa_tematica m on m.entity_id=node.nid
+join taxonomy_term_data t on t.tid=m.field_mappa_tematica_tid
+where d.field_disciplina_tid=:disciplina_tid
+group by t.tid, t.name;", array(':disciplina_tid' => $disciplina_tid))->fetchAll();
+	
+	
+}
+function _get_nodes_for_discilpina(){
+	db_query("select node.nid,node.title,node.type,t.name,t.tid from node
+join field_data_field_disciplina d on d.entity_id=node.nid
+join field_data_field_mappa_tematica m on m.entity_id=node.nid
+join taxonomy_term_data t on t.tid=m.field_mappa_tematica_tid
+where d.field_disciplina_tid=:tid;", array(':tid' => $disciplina_nid));
+}
+
+/*
+ * Recupera le mappe tematiche
+ */
+function d3t_aree_tematiche_json(){
+	$items =  db_query("select t.tid,t.name from taxonomy_vocabulary v
+join taxonomy_term_data t on t.vid=v.vid
+where v.machine_name=:machine_name;", array(':machine_name' => 'mappe_tematiche'))->fetchAll();
+	drupal_json_output($items);
+}
+/*
+ * Recupera le discipline
+ */
+function d3t_discipline_json(){
+	$items = db_query("select t.tid,t.name from taxonomy_vocabulary v
+join taxonomy_term_data t on t.vid=v.vid
+where v.machine_name=:machine_name;", array(':machine_name' => 'discipline'))->fetchAll();
+	drupal_json_output($items);
+	
+}
+
 
 function d3t_test_data_json(){
 	global $base_url;
@@ -116,11 +250,9 @@ function _d3t_test_data_json(){
 	print $output;
 	exit;
 }
-/**
- * Costruisce l'oggetto json con i dati
- *
- */
-function d3t_data_json(){
+
+
+function aaa_d3t_data_json(){
 
 	$vid = $_GET['vid'];
 	$tid = $_GET['tid'];
@@ -165,21 +297,37 @@ function get_term($vid, $tid){
 where term.tid=:tid and term.vid=:vid",array(':tid' => $tid, ':vid' => $vid))->fetchObject();
 }
 
-function _get_nodes_related_to_terms($mappa_tematica_tid, $disciplina_tid){
-	$entities = array();
-	$bundles = array('documento');
-	$nodeQuery = new EntityFieldQuery();
-	$result = $nodeQuery->entityCondition('entity_type', 'node')
-	->propertyCondition('status', 1)
-	->entityCondition('bundle', $bundles)
-	->fieldCondition('field_disciplina', 'tid', $disciplina_tid)
-	->fieldCondition('field_mappa_tematica', 'tid', $mappa_tematica_tid)
-	->execute();
-
-	if (!empty($result['node'])) {
-		$entities = entity_load('node', array_keys($result['node']));
+function _get_nodes_related_to_terms($params){
+	if(count($params) > 1){
+		$nodes =  db_query("select node.nid,node.title,node.type from node
+join field_data_field_disciplina d on d.entity_id=node.nid
+join field_data_field_mappa_tematica m on m.entity_id=node.nid
+where d.field_disciplina_tid=:disciplina_tid
+and m.field_mappa_tematica_tid=:mappa_tematica_tid
+and node.status=1;", array(':disciplina_tid' => $params['D'], ':mappa_tematica_tid' => $params['M']))
+		->fetchAll();
+	}else{
+		reset($params);
+		$type = key($params);
+		switch($type){
+			case "D":
+				$nodes =  db_query("select node.nid,node.title,node.type from node
+	join field_data_field_disciplina d on d.entity_id=node.nid
+	where d.field_disciplina_tid=:disciplina_tid
+	and node.status=1;", array(':disciplina_tid' => $params[$type]))
+				->fetchAll();
+				break;
+			case "M":
+				$nodes =  db_query("select node.nid,node.title,node.type from node
+	join field_data_field_mappa_tematica m on m.entity_id=node.nid
+	where m.field_mappa_tematica_tid=:mappa_tematica_tid
+	and node.status=1;", array(':mappa_tematica_tid' => $params[$type]))
+				->fetchAll();
+				break;
+		}
 	}
-	return $entities;
+	
+	return $nodes;
 }
 
 function _get_vocabolary_terms($machine_name){

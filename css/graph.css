@@ -1,0 +1,45 @@
+.node {
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+
+.node text {
+  pointer-events: none;
+  font: 14pt sans-serif;
+  font-weight: bold;
+  color: #000;
+  fill: #000;
+}
+
+circle.active{
+	stroke: orange;
+	stroke-width: 4px;
+}
+
+.link {
+  stroke: #999;
+  stroke-opacity: .6;
+}
+
+#discipline{
+	list-style-type: none;
+}
+#discipline li {display: inline;padding: .2em .4em;}
+#discipline li a
+{
+text-decoration: none;
+padding: .2em 1em;
+color: #fff;
+background-color: #036;
+}
+
+#aree-tematiche{
+	list-style-type: none;
+}
+#aree-tematiche li {display: inline; padding: .1em .2em;}
+#aree-tematiche li a
+{
+text-decoration: none;
+color: #fff;
+background-color: #E72;
+}

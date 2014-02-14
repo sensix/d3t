@@ -1,5 +1,4 @@
 <?php 
-include(drupal_get_path('module', 'd3t') . "/include/Bubble.inc");
 /**
  * Hook menu
  * 
@@ -13,9 +12,34 @@ function d3t_menu(){
 			'type' => MENU_CALLBACK, 
 			'file' => 'd3t.inc',
 	);
-	
-	$items['d3t/data.json'] = array(
-			'page callback' => 'd3t_data_json',
+	$items['d3t/content'] = array(
+			'page callback' => 'd3t_content',
+			'access callback' => true,
+			'type' => MENU_CALLBACK,
+			'file' => 'd3t.inc',
+	);
+	$items['d3t/graph/D/%'] = array(
+			'page callback' => 'd3t_graph_discipline',
+			'page arguments' => array(3),
+			'access callback' => true,
+			'type' => MENU_CALLBACK,
+			'file' => 'd3t.inc',
+	);
+	$items['d3t/graph/M/%'] = array(
+			'page callback' => 'd3t_graph_mappe_tematiche',
+			'page arguments' => array(3),
+			'access callback' => true,
+			'type' => MENU_CALLBACK,
+			'file' => 'd3t.inc',
+	);
+	$items['d3t/discipline.json'] = array(
+			'page callback' => 'd3t_discipline_json',
+			'access callback' => true,
+			'type' => MENU_CALLBACK,
+			'file' => 'd3t.inc',
+	);
+	$items['d3t/aree_tematiche.json'] = array(
+			'page callback' => 'd3t_aree_tematiche_json',
 			'access callback' => true,
 			'type' => MENU_CALLBACK,
 			'file' => 'd3t.inc',
@@ -33,8 +57,9 @@ function d3t_menu(){
  * 
  */
 function d3t_block_info(){
-	return array('graph' =>
-			array('info' => t('Content Graph'))
+	return array(
+			'graph' => array('info' => t('Grafico mappe tematiche')),
+			'graph_content' => array('info' => t('Contenuti mappe tematiche'))
 	);
 }
 /**
@@ -47,19 +72,24 @@ function d3t_block_view($delta){
 		case 'graph':
 			$block['subject'] = '';
 			$block['content'] = array(
-				'#markup' => '<div class="graph"></div>',
+				'#markup' => '<div class="selector"><ul id="aree-tematiche"></ul><ul id="discipline"></ul></div><div class="graph"></div>',
   			'#attached' => array(
       		'css' => array(
-        		drupal_get_path('module', 'd3t') . '/css/style.css',
+      				drupal_get_path('module', 'd3t') . '/css/graph.css',
       		),
       		'js' => array(
         		drupal_get_path('module', 'd3t') . '/js/modernizr.js',
       			drupal_get_path('module', 'd3t') . '/js/d3.v3.js',
-      			drupal_get_path('module', 'd3t') . '/js/force_directed_graph.js'
+      			drupal_get_path('module', 'd3t') . '/js/graph.js'
     			),
   			),
   		);
-			break;
+		break;
+		case 'graph_content':
+			$block['subject'] = '';
+			$block['content'] = array('#markup' => '<div id="graph-content-container"></div>');
+		break;
 	}
 	return $block;
 }
+
