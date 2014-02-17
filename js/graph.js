@@ -18,7 +18,7 @@
     		$.each(data, function(i,n){
     			if(i == 0){
     				//carica la mappa la prima volta!!
-    				draw('M', n.tid);
+    				draw('D', n.tid);
     				//carica i contenuti associati alla mappa tematica
     				content('M', n.tid, 0, 0);
         			$('<li><a class="active" id="selctor-data-tid-'+n.tid+'" href="'+n.tid+'" data-tid="'+n.tid+'">'+n.name+'</a></li>').appendTo('#aree-tematiche');
