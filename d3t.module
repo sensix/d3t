@@ -72,7 +72,9 @@ function d3t_block_view($delta){
 		case 'graph':
 			$block['subject'] = '';
 			$block['content'] = array(
-				'#markup' => '<div class="selector"><ul id="aree-tematiche"></ul><ul id="discipline"></ul></div><div class="graph"></div>',
+				'#markup' => '<div class="selector">
+					<span id="label-aree-tematiche">Aree tematiche:</label><ul id="aree-tematiche"></ul>
+					<span id="labe-discipline">Discipline:</span><ul id="discipline"></ul></div><div class="graph"></div>',
   			'#attached' => array(
       		'css' => array(
       				drupal_get_path('module', 'd3t') . '/css/graph.css',

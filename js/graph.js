@@ -4,10 +4,12 @@
     attach: function(context, settings){
     	$.get(settings.basePath + 'd3t/discipline.json', function(data){
     		$.each(data, function(i,n){
-    			$('<li><a href="'+n.tid+'" data-tid="'+n.tid+'">'+n.name+'</a></li>').appendTo('#discipline');
+    			$('<li><a id="selctor-data-tid-'+n.tid+'" href="'+n.tid+'" data-tid="'+n.tid+'">'+n.name+'</a></li>').appendTo('#discipline');
     		});
     		$('#discipline a').click(function(event){
     			event.preventDefault();
+    			$('.selector a').removeClass("active");
+    			$(this).addClass("active");
     			draw('M', event.target.dataset.tid);
     			content('D', event.target.dataset.tid, 0, 0);
     		});
@@ -19,11 +21,15 @@
     				draw('M', n.tid);
     				//carica i contenuti associati alla mappa tematica
     				content('M', n.tid, 0, 0);
+        			$('<li><a class="active" id="selctor-data-tid-'+n.tid+'" href="'+n.tid+'" data-tid="'+n.tid+'">'+n.name+'</a></li>').appendTo('#aree-tematiche');
+    			}else{
+        			$('<li><a id="selctor-data-tid-'+n.tid+'" href="'+n.tid+'" data-tid="'+n.tid+'">'+n.name+'</a></li>').appendTo('#aree-tematiche');
     			}
-    			$('<li><a href="'+n.tid+'" data-tid="'+n.tid+'">'+n.name+'</a></li>').appendTo('#aree-tematiche');
     		});
     		$('#aree-tematiche a').click(function(event){
     			event.preventDefault();
+    			$('.selector a').removeClass("active");
+    			$(this).addClass("active");
     			draw('D', event.target.dataset.tid);
        			content('M', event.target.dataset.tid, 0, 0);
        		 
