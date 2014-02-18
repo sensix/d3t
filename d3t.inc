@@ -16,7 +16,7 @@ function d3t_content(){
 	$nodes = _get_nodes_related_to_terms($params);
 	$out = '<ul class="graph-content">';
 	foreach($nodes as $node){
-		$out .= '<li>'.l($node->title, 'node/' . $node->nid).'</li>';
+		$out .= '<li class="type-'.$node->type.'">'.l($node->title, 'node/' . $node->nid).'</li>';
 	}
 	$out .= '</ul>';
 	print $out;

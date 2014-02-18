@@ -11,7 +11,6 @@
     			$('.selector a').removeClass("active");
     			$(this).addClass("active");
     			draw('M', event.target.dataset.tid);
-    			content('D', event.target.dataset.tid, 0, 0);
     		});
     	});
     	$.get(settings.basePath + 'd3t/aree_tematiche.json', function(data){
@@ -19,8 +18,6 @@
     			if(i == 0){
     				//carica la mappa la prima volta!!
     				draw('D', n.tid);
-    				//carica i contenuti associati alla mappa tematica
-    				content('M', n.tid, 0, 0);
         			$('<li><a class="active" id="selctor-data-tid-'+n.tid+'" href="'+n.tid+'" data-tid="'+n.tid+'">'+n.name+'</a></li>').appendTo('#aree-tematiche');
     			}else{
         			$('<li><a id="selctor-data-tid-'+n.tid+'" href="'+n.tid+'" data-tid="'+n.tid+'">'+n.name+'</a></li>').appendTo('#aree-tematiche');
@@ -31,8 +28,6 @@
     			$('.selector a').removeClass("active");
     			$(this).addClass("active");
     			draw('D', event.target.dataset.tid);
-       			content('M', event.target.dataset.tid, 0, 0);
-       		 
     		});
     	});
     	
@@ -132,6 +127,13 @@
         
       });
     });
+    	if(type == 'M'){
+    		content('D', tid, 0, 0);
+    	}else{
+    		content('M', tid, 0, 0);
+    	}
+    	
+    
     	}
     	function content(type, tid, parent_type, parent_tid){
     		var uri = settings.basePath + 'd3t/content';
