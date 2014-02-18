@@ -14,7 +14,14 @@ function d3t_content(){
 		$params = array($type => $tid);
 	}
 	$nodes = _get_nodes_related_to_terms($params);
-	$out = '<ul class="graph-content">';
+	$out = "";
+	if($parent_tid !== FALSE){
+		$parent_term = _get_term_name($parent_tid);
+		$out .= '<div class="graph-parent-term type-'.$parent_type.'">' . $parent_term->name . '</div>';
+	}
+	$term =  _get_term_name($tid);
+	$out .= '<div class="graph-term type-'.$type.'">' . $term->name . '</div>';
+	$out .= '<ul class="graph-content">';
 	foreach($nodes as $node){
 		$out .= '<li class="type-'.$node->type.'">'.l($node->title, 'node/' . $node->nid).'</li>';
 	}
